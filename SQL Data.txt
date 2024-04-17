@@ -1,0 +1,252 @@
+-- Drop the existing database if it exists and create a fresh one
+DROP DATABASE IF EXISTS rentalDB;
+CREATE DATABASE rentalDB;
+USE rentalDB;
+
+create table Person(
+	personID 		varchar(5) 	not null primary key, 
+	fname 			varchar(255) 	not null,
+	lname 			varchar(255) 	not null,
+	phone 			varchar(10) 	not null
+);
+
+create table Manager (
+	managerID		varchar(5)	not null primary key,
+	startManagement 	int 		not null,
+	foreign key (managerID) references Person(personID) on delete cascade
+);
+
+create table Owner (
+	ownerID			varchar(5)	not null primary key,
+	foreign key (ownerID) references Person(personID) on delete cascade
+);
+
+create table Property(
+	propertyID 		int 		not null primary key, 
+	street 			varchar (255) 	not null,
+	apartment 		varchar (255) 	not null,
+	city 			varchar (255) 	not null,
+	province 		char (2) 	not null,
+	pc 			varchar (7) 	not null,
+	dateListed 		date 		not null,
+	numBath 		int	 	not null,
+	numBeds 		int 		not null,
+	cost	 		int 		not null, -]
+	acc 			varchar(255)	not null, 
+	parking 		boolean 	not null, 
+	manages			varchar(5),
+	foreign key (manages) references Manager(managerID) on delete set null
+);
+
+create table RentalGroup(
+	code			int		not null primary key, 
+	prefType	 	varchar(255)	not null, 
+	prefNumBeds 		int		not null,
+	prefNumBath 		int		not null,
+	prefParking		boolean		not null,
+	prefLaundry		boolean		not null,
+	cost			int		not null, 
+	prefAccessibility	varchar(255)	not null,
+	leases			int,
+	foreign key (leases) references Property(propertyID)
+);
+
+CREATE TABLE Manages(
+    managerID varchar(5) not null,
+    propertyID int not null,
+    startDate date not null,
+    endDate date,
+    PRIMARY KEY (managerID, propertyID),
+    FOREIGN KEY (managerID) REFERENCES Manager(managerID) ON DELETE CASCADE,
+    FOREIGN KEY (propertyID) REFERENCES Property(propertyID) ON DELETE CASCADE
+);
+
+
+create table Renter (
+	renterID		varchar(5)	not null,
+	studentID		varchar(255)	not null,
+	gradYear 		int 		not null,
+	program 		varchar(255) 	not null,
+	rentalGroup		int		not null,
+	primary key (renterID, studentID),
+	foreign key (renterID) references Person(personID) on delete cascade,
+	foreign key (rentalGroup) references RentalGroup (code) on delete cascade
+);
+
+create table House(
+	houseID 		int 		not null primary key,
+	fence 			boolean 	not null,
+	detached 		boolean 	not null, 
+	foreign key (houseID) references Property(propertyID) on delete cascade
+);
+
+create table Apartment(
+	aptID 			int 		not null primary key,
+	floor 			int 		not null,
+	elevator 		boolean		not null, 
+	foreign key (aptID) references Property(propertyID) on delete cascade
+);
+
+create table Room(
+	roomID 			int 		not null primary key,
+	kitchen 		boolean		not null, 
+	numRoomates		int 		not null,
+	foreign key (roomID) references Property(propertyID) on delete cascade
+);
+
+create table Furnishing(
+	furnishingID		int		not null primary key,
+	furnishing		varchar(255)	not null, 
+	foreign key (furnishingID) references Room(roomID) on delete cascade
+);
+	
+create table Owns(
+	ownerID			varchar(5)	not null,
+	propertyID		int		not null,
+	primary key (ownerID, propertyID),
+	foreign key (ownerID) references Owner (ownerID),
+	foreign key (propertyID) references Property (propertyID)
+);
+
+-- Insert sample data into Person table with new values
+INSERT INTO Person (personID, fname, lname, phone) VALUES
+('BA101', 'Emma', 'Walsh', '9876543211'),
+('DC202', 'Liam', 'Fisher', '8765432192'),
+('FE303', 'Ava', 'Stevens', '7654321983'),
+('HG404', 'Noah', 'Pearce', '6543219874'),
+('JI505', 'Olivia', 'Chapman', '5432198765'),
+('LK606', 'William', 'Frost', '4321987656'),
+('MO707', 'Sophia', 'Morton', '3219876547'),
+('PQ808', 'James', 'Baldwin', '2198765438'),
+('RS909', 'Isabella', 'Barnett', '1987654329'),
+('TU010', 'Ethan', 'Clarke', '1234567801'),
+('VW111', 'Mia', 'Holt', '2345678902'),
+('XY212', 'Lucas', 'Gardner', '3456789013'),
+('ZA313', 'Charlotte', 'Payne', '4567890124'),
+('BC414', 'Benjamin', 'Little', '5678901235'),
+('DE515', 'Amelia', 'Austin', '6789012346'),
+('FG616', 'Jacob', 'Abbott', '7890123457'),
+('HI717', 'Evelyn', 'Atkinson', '8901234568'),
+('JK818', 'Logan', 'Banks', '9012345679'),
+('LM919', 'Avery', 'Byrne', '4123456780'),
+('NO020', 'Nathan', 'Carter', '1234509877'),
+('PQ121', 'Zoe', 'Day', '2345610988'),
+('RS222', 'Adam', 'Ellis', '3456721099'),
+('TU323', 'Victoria', 'Floyd', '4567832100'),
+('VW424', 'Luke', 'Grant', '5678943211');
+
+-- Insert sample data into Owner table with new values
+INSERT INTO Owner (ownerID) VALUES
+('BA101'),
+('DC202'),
+('FE303'),
+('HG404'),
+('JI505'),
+('LK606');
+
+-- Insert sample data into Manager table with new values
+INSERT INTO Manager (managerID, startManagement) VALUES
+('MO707', 2014),
+('PQ808', 2015),
+('RS909', 2016),
+('TU010', 2017),
+('VW111', 2018),
+('XY212', 2019);
+
+-- Insert sample data into Property table with new values
+INSERT INTO Property (propertyID, street, apartment, city, province, pc, dateListed, numBath, numBeds, cost, acc, parking, manages) VALUES
+(101, '123 Oak St', '', 'Calgary', 'AB', 'A1B 2C3', '2023-06-15', 1, 2, 1500, 'No', false, 'MO707'),
+(102, '456 Elm St', '', 'Ottawa', 'ON', 'K1A 0B4', '2023-07-20', 3, 4, 2100, 'Yes', true, 'PQ808'),
+(103, '789 Willow Rd', '', 'Halifax', 'NS', 'B3H 3J5', '2023-08-25', 2, 3, 1650, 'No', true, 'RS909'),
+(104, '321 Maple Ave', '', 'Toronto', 'ON', 'M5V 2T6', '2023-09-30', 1, 1, 1300, 'Yes', false, 'TU010'),
+(105, '654 Pine Rd', '', 'Vancouver', 'BC', 'V6B 3G7', '2023-11-15', 2, 2, 2200, 'No', true, 'VW111'),
+(106, '987 Birch Ln', '', 'Montreal', 'QC', 'H3Z 2Y8', '2023-12-21', 3, 3, 1950, 'Yes', false, 'XY212'),
+(107, '246 Cedar Pl', 'Apt 11', 'Windsor', 'ON', 'N9A 6J3', '2024-01-16', 1, 1, 1800, 'No', true, 'MO707'),
+(108, '135 Spruce Ct', 'Unit 22', 'Quebec City', 'QC', 'G1R 4P9', '2024-02-20', 2, 2, 1750, 'Yes', true, 'PQ808'),
+(109, '975 Maple St', 'Suite 33', 'Whitehorse', 'YT', 'Y1A 2B5', '2024-03-27', 1, 3, 2000, 'No', false, 'RS909'),
+(110, '864 Oak Blvd', 'Apt 44', 'Victoria', 'BC', 'V8W 1M9', '2024-05-02', 2, 2, 2100, 'Yes', true, 'TU010'),
+(111, '753 Elm Ave', 'Unit 55', 'Saskatoon', 'SK', 'S7K 5J8', '2024-06-17', 1, 1, 1400, 'No', false, 'VW111'),
+(112, '642 Pine Way', 'Suite 66', 'Regina', 'SK', 'S4P 3A8', '2024-07-23', 2, 3, 1850, 'Yes', true, 'XY212'),
+(113, '531 Maple Ln', 'Room G', 'St. John\'s', 'NL', 'A1C 5M9', '2024-08-28', 1, 1, 900, 'No', true, 'MO707'),
+(114, '420 Birch Rd', 'Room H', 'Charlottetown', 'PE', 'C1A 2B6', '2024-10-03', 1, 1, 950, 'Yes', true, 'PQ808'),
+(115, '313 Oak Dr', 'Room I', 'Fredericton', 'NB', 'E3B 5A4', '2024-11-08', 1, 1, 875, 'No', false, 'RS909'),
+(116, '206 Elm St', 'Room J', 'Edmonton', 'AB', 'T5K 2P7', '2024-12-14', 1, 1, 825, 'Yes', true, 'TU010'),
+(117, '119 Pine Pl', 'Room K', 'Calgary', 'AB', 'A1B 2C4', '2025-01-19', 1, 1, 860, 'No', false, 'VW111'),
+(118, '802 Birch Ave', 'Room L', 'Winnipeg', 'MB', 'R3C 4A7', '2025-02-23', 1, 1, 890, 'Yes', true, 'XY212');
+
+-- Insert sample data into Owns table with new values
+INSERT INTO Owns (ownerID, propertyID) VALUES
+('BA101', 101),
+('DC202', 102),
+('FE303', 103),
+('HG404', 104),
+('JI505', 105),
+('LK606', 106),
+('BA101', 107),
+('DC202', 108),
+('FE303', 109),
+('HG404', 110),
+('JI505', 111),
+('LK606', 112),
+('BA101', 113),
+('DC202', 114),
+('FE303', 115),
+('HG404', 116),
+('JI505', 117),
+('LK606', 118);
+
+-- Insert sample data into House table with new values
+INSERT INTO House (houseID, fence, detached) VALUES
+(101, false, true),
+(102, true, false),
+(103, false, true),
+(104, true, false),
+(105, false, true),
+(106, true, false);
+
+-- Insert sample data into Apartment table with new values
+INSERT INTO Apartment (aptID, floor, elevator) VALUES
+(107, 5, false),
+(108, 10, true),
+(109, 3, false),
+(110, 12, true),
+(111, 8, false),
+(112, 6, true);
+
+-- Insert sample data into Room table with new values
+INSERT INTO Room (roomID, kitchen, numRoomates) VALUES
+(113, false, 3),
+(114, true, 2),
+(115, false, 0),
+(116, true, 1),
+(117, false, 4),
+(118, true, 2);
+
+-- Insert sample data into Furnishing table with new values
+INSERT INTO Furnishing (furnishingID, furnishing) VALUES
+(113, 'Bed, Desk, Chair, Wardrobe'),
+(114, 'Sofa, Bed, Bookshelf'),
+(115, 'Desk, Chair, Bed, Nightstand'),
+(116, 'Bed, Dresser, Lamp, Chair'),
+(117, 'Murphy Bed, Desk, Wardrobe, Bookshelf'),
+(118, 'Sofa, Bed, Desk, Dresser');
+
+-- Insert sample data into RentalGroup table with new values
+INSERT INTO RentalGroup (code, prefType, prefNumBeds, prefNumBath, prefParking, prefLaundry, cost, prefAccessibility, leases) VALUES
+(4310, 'House', 3, 1, false, true, 1900, 'No', NULL),
+(4321, 'Apartment', 2, 2, true, false, 2100, 'Yes', NULL),
+(5432, 'Room', 1, 1, true, true, 850, 'No', NULL),
+(6543, 'House', 4, 3, false, true, 2500, 'Yes', NULL),
+(7654, 'Apartment', 1, 1, true, false, 1200, 'No', NULL),
+(8765, 'Room', 1, 1, false, true, 700, 'Yes', NULL);
+
+-- Insert sample data into Renter table with new values
+INSERT INTO Renter (renterID, studentID, gradYear, program, rentalGroup) VALUES
+('ZA313', '000111222', 2025, 'Biology', 4310),
+('BC414', '111222333', 2024, 'History', 4321),
+('DE515', '222333444', 2023, 'Engineering', 5432),
+('FG616', '333444555', 2026, 'Philosophy', 6543),
+('HI717', '444555666', 2022, 'Mathematics', 7654),
+('JK818', '555666777', 2025, 'Art History', 8765);
+
+INSERT INTO Manages (managerID, propertyID, startDate) VALUES ('MO707', 101, '2024-01-01');

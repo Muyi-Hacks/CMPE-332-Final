@@ -1,4 +1,7 @@
 This project was done as part of a 3rd year SQL course at Queen's University.
+
+Video Demo here = https://www.loom.com/share/7746fe9edb144f9a843ab8e25d3cf9be?sid=3fefed5a-ed14-4c72-b88e-c99ceb9ed8d6
+
 These were the requirements:
 Rental Database Functional Requirements
 Please note:  Instruction on Application Development will be given in class.  Until we have covered this material, you probably do not have enough information to complete this assignment.
